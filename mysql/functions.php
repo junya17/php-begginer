@@ -6,22 +6,27 @@ if(isset($_POST['submit'])) {
     global $connection;
     $username = $_POST['username'];
     $password = $_POST['password'];
-    $connection = mysqli_connect('localhost', 'root', '', 'loginapp');
-        if($connection) {
-            echo "We are connected";
-        } else {
-            die("Database connection failed");
-        }
 
-        $query = "INSERT INTO users(username,password)";
-        $query .= "VALUES('$username','$password')";
+    $username = mysqli_real_escape_string($connection, $username);
+    $password = mysqli_real_escape_string($connection, $password);
 
-        $result = mysqli_query($connection, $query);
-        if(!$result) {
-            die('Query failed'. mysqli_error());  
-        } else {
-            echo "Record Create";
-        }
+    $hashFormat = "$2y$10$";
+    $salt = "iusesomecrazystirngs22";
+    $hashF_and_salt = $hashFormat . $salt;
+
+    $password = crypt($password, $hashF_and_salt);
+
+
+   
+    $query = "INSERT INTO users(username,password)";
+    $query .= "VALUES('$username','$password')";
+
+    $result = mysqli_query($connection, $query);
+    if(!$result) {
+        die('Query failed'. mysqli_error());  
+    } else {
+        echo "Record Create";
+    }
     }
 }
 
